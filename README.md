@@ -2,7 +2,7 @@
 
 MiniCA is a lightweight, self‑contained Certificate Authority utility (C# .NET 9) for generating a private `Root CA`, `Intermediate CA` and issuing server or client (mutual TLS) certificates.
 
-It began as a C# port of the Go project https://github.com/jsha/minica using `GitHub Copilot`/`GPT5`. Did it really write all this code? Quite a large part enabling me to rapidly achieve a working prototype, and to build on top of it, learning as I went along. Kudos to the generative AI folks!
+It began as a C# port of the Go project https://github.com/jsha/minica using `GitHub Copilot`/`GPT5`. Did it really write all this code? Quite a large part, enabling me to rapidly achieve a working prototype, and to build on top of it, learning as I went along. Kudos to the generative AI folks!
 
 If you want *your* app to look professional in demos, with SSL and single sign-on (via client certificate authentication), look no further.
 
@@ -11,21 +11,21 @@ If you want *your* app to look professional in demos, with SSL and single sign-o
 The tool is cross-platform and works on Windows, Linux, and macOS.
 
 
-_I am using it actively in my own projects (for both SSO, REST APIs and on premise web-server)._
+_I am using it actively in my own projects (for both SSO, REST APIs and on-premise web-server)._
 
 ---
 
 ## Key Features
 
 - Automatic generation of Root CA + Intermediate CA certificates, with an optional random suffix for CA name to avoid collisions.
-- Easy generation of server certificates: DNS SANs / IP SANs / wildcard names.
+- Easy generation of server certificates: DNS SANs / IP SANs/wildcard names.
 - Easy generation of client certificates: UPN (User Principal Name) + PKCS#12 (.p12) export.
-- Support for both RSA (2048) or ECDSA (P‑384) key algorithms.
+- Support for both RSA (2048) and ECDSA (P‑384) key algorithms.
 - Supports Org, Org unit, Country:
   - OU and Country are applied only to end‑entity (leaf) certificates.
   - Organisation (O) is included on CA and leaf certificates.
 - Easy generation of full-chain bundle(s) including leaf (client/server) + intermediate CA + root CA (if no intermediate, just root).
-- Variable length certificate expiry.
+- Variable-length certificate expiry.
 - Built-in verification of the generated certificates, with warnings for potential issues.
 - Writes out a human-readable dump of the certificates, and a JSON summary of the generated certificate details for CI/automation.
 
@@ -111,9 +111,9 @@ dotnet publish -p:PublishSingleFile=true -c Release -o ./output
 | `--cert-path <path>` | Path for all certificates | `.\cert\` |
 | `--ca-name <name>` | Root CA Common Name (without "Root CA" suffix)| `Test` (="Test Root CA") |
 | `--ca-alg <rsa|ecdsa>` | Algorithm for new key pairs | `ecdsa` |
-| `--ca-expiry <time>` | Root CA validity period `999[y|m|d]` | `20y` |
-| `--intermediate-expiry <time>` | Intermediate CA validity period `999[y|m|d]` | `10y` |
-| `--leaf-expiry <time>` | Leaf certificate validity period `999[y|m|d]` | `2y` |
+| `--ca-expiry <time>` | Root CA validity period `999[y,m,d]` | `20y` |
+| `--intermediate-expiry <time>` | Intermediate CA validity period `999[y,m,d]` | `10y` |
+| `--leaf-expiry <time>` | Leaf certificate validity period `999[y,m,d]` | `2y` |
 | `--no-intermediate` | Do not create an intermediate CA, sign leaf certs directly from the root CA (not recommended) | false |
 | `--domains <d1,d2>` | Comma-separated DNS names for SAN | (none) |
 | `--ip-addresses <i1,i2>` | Comma-separated IP SAN entries | (none) |
@@ -132,11 +132,11 @@ At least one of: `--domains`, `--ip-addresses`, or `--user` must be supplied.
 
 - `0` success
 - `1` validation or unexpected error. `Console.Error` contains the error message.
-- `2` warning - one or more generated certificate(s) flagged possible issues during verification.
+- `2` warning - one or more generated certificates (s) flagged possible issues during verification.
 
 Console output includes a clear echo of args at start.
 
-Although what it does should be fairly obvious, for peace of mind it writes out a `.txt` file containing an independent summary of the generated certificate, including serial number, subject, issuer, SANs, validity period etc. This might be useful for troubleshooting.
+Although what it does should be fairly obvious, for peace of mind, it writes a `.txt` file containing an independent summary of the generated certificate, including serial number, subject, issuer, SANs, validity period etc. This might be useful for troubleshooting.
 
 ---
 
@@ -147,7 +147,7 @@ By default, all keys and certificates are created in the exe directory in folder
 MiniCA.exe --key-path c:\productx\keys --cert-path c:\productx\certs --domains myintra.net --ip-addresses 127.0.0.1
 ```
 
-With the exception of the default, don't forget to create the directories first, as MiniCA does not create them for you. This is by design, because it is important you manage them properly, and that starts with considering security.
+With the exception of the default, be sure to create the directories first, as MiniCA does not create them automatically. This is by design, as it is essential to manage them properly, and that begins with considering security.
 
 - If you see `[ERROR] Error: The private key file-path does not exist.`, ensure the specified `--key-path` directory exists and is writable.
 
@@ -157,9 +157,9 @@ With the exception of the default, don't forget to create the directories first,
 
 ## Quick Start (Server Certificate)
 
-If you want to spin up an internal web-server with TLS/SSL, you will need a server certificate. 
+If you want to spin up an internal web server with TLS/SSL, you will need a server certificate. 
 
-Let's say your web site is `myintra.net`. Simply generate a root & intermediate CA and a server cert for myintra.net and 127.0.0.1 like this:
+Let's say your website is `myintra.net`. Simply generate a root & intermediate CA and a server cert for myintra.net and 127.0.0.1 like this:
 ```bash
 MiniCA.exe --domains myintra.net --ip-addresses 127.0.0.1
 ```
@@ -171,7 +171,7 @@ This creates the following files:
 - `myintra.net.fullchain.key`, `myintra.net.fullchain.crt` : full chain
 - `README.txt` : Info about how to install the generated certs in Windows using CertUtil
 
-Add the certificate to the web-server, and import the root and intermediate CA certificates into your OS/browser trust store, so it will trust the server certificate.
+Add the certificate to the web server, and import the root and intermediate CA certificates into your OS/browser trust store, so it will trust the server certificate.
  
 ---
 
@@ -191,7 +191,7 @@ This creates the following files:
 - `wildcard.example.internal.key`, `wildcard.example.internal.crt` : Server key and certificate (signed by the intermediate CA, or root CA if no intermediate)
 - `wildcard.example.fullchain.key`, `wildcard.example.fullchain.crt` : full chain
 
-Any `*` replaced by `wildcard`, due to most operating systems reserving it.
+Any `*` is replaced by `wildcard`, due to most operating systems reserving it.
 
 So, what happens if we call it with multiple domains, including a wildcard?
 
@@ -207,7 +207,7 @@ Whilst it looks a bit odd, it is valid to have multiple SAN entries. The first d
 
 It's possible that you want a secure connection to a server that is only known by its IP address. You can do that with certificates on both ends.
 
-For that you generate a root & intermediate CA then a server certificate for the IP addresses like this:
+For that, you generate a root & intermediate CA, then a server certificate for the IP addresses like this:
 ```bash
 MiniCA.exe --ip-addresses 192.168.1.100
 ```
@@ -238,11 +238,11 @@ It is also possible to create a short-lived root CA or intermediate CA, but this
 
 ## Mutual TLS / 2-way SSL => Client Certificates
 
-Or maybe like me, you want to use client certificate authentication for single sign-on to your internal web application (using mTLS / 2-way SSL)?
+Or maybe, like me, you want to use client certificate authentication for single sign-on to your internal web application (using mTLS / 2-way SSL)?
 
 Let's say you have a web-server (e.g. `www.mysite.io`), and a user `dave@mysite.io` who needs a client certificate to access it.
 
-For this you make the client certificate with the `--user` option (example user `dave@mysite.io`):
+For this, you make the client certificate with the `--user` option (example user `dave@mysite.io`):
 
 ```bash
 MiniCA.exe --user dave@mysite.io
@@ -257,7 +257,7 @@ This creates the following files:
 - `dave@mysite.io.p12` : PKCS#12 archive for the client certificate, with the password `letmein` (use the `--p12-password` option to change)
 - `dave@mysite.io.fullchain.key`, `dave@mysite.io.fullchain.crt` : full chain
 
-You create a server certificate for your web-server (e.g. `www.mysite.io`) as well, as follows:
+You create a server certificate for your web server (e.g. `www.mysite.io`) as well, as follows:
 ```bash 
 MiniCA.exe --domains www.mysite.io,127.0.0.1
 ```
@@ -270,7 +270,7 @@ The Root CA and Intermediate CA certificates provide a trust relationship becaus
 
 In the previous example, we created a server certificate for `www.mysite.io` and a client certificate for `dave@mysite.io`. Using nginx as a reverse proxy, we can configure it to use the server certificate, and optionally request a client certificate for authentication.
 
-We set the paths to your generated certificates. The cert needs to be in CRT format, and be a full chain certificate. e.g. for `www.mysite.io` :
+We set the paths to your generated certificates. The cert needs to be in CRT format and be a full chain certificate. e.g. for `www.mysite.io` :
 - `ssl_certificate /etc/ssl/certs/www.mysite.io.fullchain.crt;`
 - `ssl_certificate_key /etc/ssl/private/www.mysite.io.fullchain.key;`
 
@@ -324,7 +324,7 @@ _Adjust paths as needed._
 
 Maybe an example will help, so here's what I do in Lucee (see: lucee.org). Lucee has nginx as a proxy providing SSL.
 
-If the client certificate is offered by the browser , then we expect these headers to be present:
+If the client certificate is offered by the browser, then we expect these headers to be present:
 - `x-ssl-client-dn`	     string	C=UK,O=MySite Ltd,OU=MySite User,`CN=dave@mysite.io`
 - `x-ssl-client-i-dn`	 string	O=MySite Ltd,CN=MySite Intermediate CA
 - `x-ssl-client-serial`	 string	1366DC588E11ED5989B53BF39DC38C90
@@ -346,7 +346,7 @@ if( structKeyExists(requestData, "headers" ) and
 			break;
 
 		case "FAILED":
-			// certificate is not valid we send them to a page asking them to contact support
+			// certificate is not valid, we send them to a page asking them to contact support
 			location(url="/error-pages/cant-signon.cfm", addtoken="false");
 			break;
 
@@ -363,20 +363,20 @@ if( structKeyExists(requestData, "headers" ) and
 
 We follow this logic:
 - if it receives a client certificate (indicated by the presence of the `X-SSL-Client-Verify` header = `SUCCESS`), it tries the SSO authentication route.
-- if the certificate is _invalid_, it send them to an error page where it shows certificate details and ask them to contact support.
+- if the certificate is _invalid_, it sends them to an error page where it shows certificate details and asks them to contact support.
 - if no certificate is presented, it shows the normal login page.
 
 The art is in what you do with the first option; how you map the certificate to a user account...
 
-It should verify a number of details in the certificate, including the "issuer" (CA) and ends with extracting the email address from the `CN=` field of the subject DN.
+It should verify a number of details in the certificate, including the "issuer" (CA) and end with extracting the email address from the `CN=` field of the subject DN.
 
 e.g. The subject DN looks like this:
 `C=UK,O=MySite Ltd,OU=MySite User,CN=dave@mysite.io`
 
-It parses the `CN=` and extracts `dave@mysite.io`, and perform basic sanity validation.
+It parses the `CN=` and extracts `dave@mysite.io`, and performs basic sanity validation.
 It uses a REST API with mechanisms in place to assert identity.
 
-#### This is a fairly well known pattern, which has been used for many years in various systems. It works well for internal applications where you can control the issuance of client certificates.
+#### This is a fairly well-known pattern, which has been used for many years in various systems. It works well for internal applications where you can control the issuance of client certificates.
 
 ---
 
@@ -878,10 +878,11 @@ Please give credit upstream (star the original project) if you find this useful.
 
 ## Disclaimer
 
-Use for development / internal testing / deployment. It's great for learning and prototyping TLS/mTLS setups. It works for micro-services, and proof of concepts.
+Use for development / internal testing/deployment. It's great for learning and prototyping TLS/mTLS setups. It works for micro-services and proof of concepts.
 
 It is _not_ a replacement for a production-grade PKI or public CA.
 
 ---
+
 
 _Happy hacking & secure experimenting!_
